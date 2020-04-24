@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * Implements hook_form_alter().
+ */
+
+function technical_test_form_system_site_information_settings_alter(&$form, $form_state, $form_id)
+{
+
+    // Add Site API Key field to 'Site Information' section
+    $technical_test = \Drupal::config('technicaltest.config')->get('siteapikey');
+    $form['site_information']['technical_test'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Site API Key'),
+        '#default_value' => $technical_test,
+        '#description' => t('An API Key to access site pages in JSON format.'),
+    );
+
+    // Change form submit button text to 'Update Configuration'
+    $form['actions']['submit']['#value'] = t('Update configuration');
+
+    // Handle form submission
+    $form['#submit'][] = 'technical_test_handler';
+}
+
+function technical_test_handler($form, &$form_state)
+{
+    // Update the system variable Site API Key
+    $config = \Drupal::configFactory()->getEditable('technicaltest.config');
+    $new_technical_test = $form_state->getValue(['technical_test']);
+    $config->set('siteapikey', $new_technical_test);
+    $config->save();
+
+    // Add message that Site API Key has been set
+    drupal_set_message("Successfully set Site API Key to " . $new_technical_test);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+
+
+function technical_test_uninstall(){
+    // Remove the previously set Site API Key configuration
+    \Drupal::configFactory()->getEditable('technicaltest.config')->delete();
+}

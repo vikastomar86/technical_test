@@ -1,0 +1,5 @@
+name: Technical test
+description: Adds Site API Key to the Site Information form under the path /admin/config/system/site-information.
+package: Custom
+type: module
+core: 8.x
